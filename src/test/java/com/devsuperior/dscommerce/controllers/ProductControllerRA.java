@@ -216,4 +216,36 @@ public class ProductControllerRA {
 			.statusCode(422)
 			.body("errors.message[0]", equalTo("Deve ter pelo menos uma categoria"));
 	}
+	
+	@Test
+	public void insertShouldReturnForbiddenWhenClientLogged() {
+		JSONObject newProduct = new JSONObject(postProductInstance);
+		
+		given()
+			.header("Content-type", "application/json")
+			.header("Authorization", "Bearer " + clientToken)
+			.body(newProduct)
+			.contentType(ContentType.JSON)
+			.accept(ContentType.JSON)
+		.when()
+			.post("/products")
+		.then()
+			.statusCode(403);
+	}
+	
+	@Test
+	public void insertShouldReturnUnauthorizedWhenInvalidToken() {
+		JSONObject newProduct = new JSONObject(postProductInstance);
+		
+		given()
+			.header("Content-type", "application/json")
+			.header("Authorization", "Bearer " + invalidToken)
+			.body(newProduct)
+			.contentType(ContentType.JSON)
+			.accept(ContentType.JSON)
+		.when()
+			.post("/products")
+		.then()
+			.statusCode(401);
+	}
 }
